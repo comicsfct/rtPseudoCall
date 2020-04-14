@@ -19,14 +19,14 @@ Installation
 Usage
 Prerequisites
 
-#Prerequisites
-		Snakemake pipeline
+# Prerequisites
+### Snakemake pipeline
 		- Snakemake
 		- python3
 		- pandas
 		- docker images: trinityctat/starfusion:1.8.1, comicspt/dogfinder:3.0
 
-		filter_pseudogenes.py
+### Pseudogenes detection
 		- python3
 		- pandas
 		- bedtools
