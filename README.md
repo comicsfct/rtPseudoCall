@@ -37,14 +37,14 @@ Prerequisites
 
 
 # Usage
-##Snakemake pipeline
+## Snakemake pipeline
 	
 The steps of the pipeline that consist of running STAR-Fusion, preprocessing alignment files and detecting readthrough regions/genes with DoGFinder (except processing the annotation file, this must be run independently) can be automatically run using the snakemake file TRTdogfinder2.py and providing a configuration file in yaml format, as shown in example TRT_configfile.yaml. This pipeline takes the [sample]_1.fastq and [sample]_2.fastq files as input and outputs for every sample a star_fusion output folder [sample_starout_fusion], a bedfile with DoGs coordinates called Final_Dog_annotation_[sample].bed and a csv table called DoGs_rpkm_table_[sample]. 
 
 
 
 
-##Detect pseudogenes in readthrough regions
+## Detect pseudogenes in readthrough regions
 
 To cross readthrough regions’ genomic coordinates with pseudogenes, you can use the following script. This script has the following dependencies: pandas, bedtools and python3.
 	usage: filter_pseudogenes.py [-h] [-f FILE [FILE ...]]
