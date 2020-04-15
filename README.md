@@ -47,12 +47,13 @@ The steps of the pipeline that consist of running STAR-Fusion, preprocessing ali
 ## Detect pseudogenes in readthrough regions
 
 To cross readthrough regions’ genomic coordinates with pseudogenes, you can use the following script. This script has the following dependencies: pandas, bedtools and python3.	
-	 """usage: filter_pseudogenes.py [-h] [-f FILE [FILE ...]]
+	 
+	 usage: filter_pseudogenes.py [-h] [-f FILE [FILE ...]]
                              [-o OUTPUT_PREFIX [OUTPUT_PREFIX ...]]
                              [-p PSEUDO_ANNOT]
                              [-r PSEUDOS_REMOVED_FROM_ANNOTATION]
                              [-w WINDOW_SIZE] [--rpkm RPKM [RPKM ...]]
-							 """
+							 
 
 	Cross readthrough genomic coordinates with pseudogene coordinates and rpkm information
 
