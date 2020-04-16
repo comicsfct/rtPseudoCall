@@ -1,0 +1,41 @@
+Summary for DoG finding with minimum length 4000 bp, minimum coverage of 0.15 FPKM, and screening window of 500 bp
+Summary of DoG lengths for all DoGs:
+              Length
+count    2709.000000
+mean    12406.572167
+std     13877.885968
+min      4000.000000
+25%      5500.000000
+50%      8500.000000
+75%     14000.000000
+max    243500.000000
+Summary of DoG lengths for all DoGs for all experiments:
+       SRR7537187_sorted  SRR7537190_sorted  SRR7537192_sorted
+count        1313.000000        1836.000000        1979.000000
+mean        10451.282559       11068.103486       11267.495200
+std         12643.672602       11878.380622       11620.211975
+min          4000.000000        4000.000000        4000.000000
+25%          5000.000000        5000.000000        5500.000000
+50%          7000.000000        7500.000000        8000.000000
+75%         11000.000000       12000.000000       13000.000000
+max        243500.000000      214000.000000      214000.000000
+Summary of expression for all DoGs across all experiments in FPKM
+       SRR7537187_sorted  SRR7537190_sorted  SRR7537192_sorted
+count        2709.000000        2709.000000        2709.000000
+mean            4.496615           4.222167           4.465138
+std            21.775322          12.796573          11.673550
+min             0.000000           0.000000           0.000000
+25%             0.650000           0.860000           0.830000
+50%             1.640000           1.930000           2.000000
+75%             3.600000           3.970000           4.410000
+max           928.610000         480.520000         270.490000
+Summary of expression for DoGs in each experiment in FPKM
+       SRR7537190_sorted  SRR7537187_sorted  SRR7537192_sorted
+count        1836.000000        1313.000000        1979.000000
+mean            5.228606           7.767997           5.766326
+std            15.013018          31.128469          13.573609
+min             0.220000           0.260000           0.240000
+25%             1.177500           1.320000           1.340000
+50%             2.500000           2.850000           2.710000
+75%             5.027500           6.040000           5.430000
+max           480.520000         928.610000         270.490000

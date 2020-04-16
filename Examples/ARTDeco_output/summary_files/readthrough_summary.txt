@@ -1,0 +1,25 @@
+Read-In Summary
+       SRR7537190_sorted log2Ratio Read-In vs. Gene  SRR7537187_sorted log2Ratio Read-In vs. Gene  SRR7537192_sorted log2Ratio Read-In vs. Gene
+count                                   1000.000000                                   1000.000000                                   1000.000000
+mean                                      -3.982213                                     -4.423429                                     -4.246827
+std                                        3.709569                                      3.886129                                      3.872728
+min                                      -14.425642                                    -15.925990                                    -14.198244
+25%                                       -6.923092                                     -7.532011                                     -7.328794
+50%                                       -3.353985                                     -4.018316                                     -3.712660
+75%                                       -1.175417                                     -1.440068                                     -1.325483
+max                                        7.749137                                      7.764071                                      7.394979
+Readthrough Summary
+       SRR7537190_sorted log2Ratio Readthrough vs. Gene  SRR7537187_sorted log2Ratio Readthrough vs. Gene  SRR7537192_sorted log2Ratio Readthrough vs. Gene
+count                                       1000.000000                                       1000.000000                                       1000.000000
+mean                                          -3.984860                                         -4.400456                                         -3.795288
+std                                            3.538355                                          3.805229                                          3.614766
+min                                          -17.153310                                        -18.534849                                        -16.387010
+25%                                           -6.184444                                         -7.212983                                         -5.724247
+50%                                           -3.212725                                         -3.561948                                         -2.939889
+75%                                           -1.468494                                         -1.589399                                         -1.309673
+max                                            4.529823                                          4.643595                                          5.364247
+Read-In Assignments for each experiment for threshold of 0 and FPKM >= 0.25
+            SRR7537190_sorted Assignment  SRR7537187_sorted Assignment  SRR7537192_sorted Assignment
+Assignment                                                                                          
+Activated                           2856                          2684                          2710
+Read-In                             1074                           818                          1001

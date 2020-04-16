@@ -1,0 +1,6 @@
+3 Experiments
+Files are Paired-End, Strand-Specific, Forward-strand oriented
+                                        Experiment  Total Reads  Mapped Reads
+ stranded/bams/artdeco_input/SRR7537190_sorted.bam     47387512      47387512
+ stranded/bams/artdeco_input/SRR7537187_sorted.bam     77732946      77732946
+ stranded/bams/artdeco_input/SRR7537192_sorted.bam     60103186      60103186
