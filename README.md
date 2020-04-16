@@ -37,11 +37,81 @@ Prerequisites
 
 
 # Usage
-## Snakemake pipeline
+
+
+## Automated pipeline
 	
-The steps of the pipeline that consist of running STAR-Fusion, preprocessing alignment files and detecting readthrough regions/genes with DoGFinder (except processing the annotation file, this must be run independently) can be automatically run using the snakemake file TRTdogfinder2.py and providing a configuration file in yaml format, as shown in example TRT_configfile.yaml. This pipeline takes the [sample]_1.fastq and [sample]_2.fastq files as input and outputs for every sample a star_fusion output folder [sample_starout_fusion], a bedfile with DoGs coordinates called Final_Dog_annotation_[sample].bed and a csv table called DoGs_rpkm_table_[sample]. 
+In order to detect pseudogenes transcribed due to readthrough transcription of upstream genes, we propose an automatic pipeline that employs already existent tools to detect readthrough transcripts spliced/unspliced and depicts subsequently the overlap with pseudogenes.  Before the automatic pipeline can be run, it is necessary to create a global annotation file to ensure that only non-genic regions are considered, where all genes/transcripts that physically overlap will be fused and the most upstream and downstream coordinates will be set as the start and end, respectively. Since DoGFinder elongates readthrough regions until it finds another gene on the annotation, we will first remove the pseudogenes from the annotation file to improve the chances of finding readthrough regions that overlap pseudogenes and then run “Get_loci_annotation” to preprocess the annotation for readthrough detection
+	grep -v pseudogene gencode.v31.annotation.gtf  > gencode.v31.annotation.noPseudogenes.gtf
+	Get_loci_annotation -out /annotation -gtf gencode.v31.annotation.noPseudogenes.gtf
+
+The steps of the pipeline that consist of running STAR-Fusion, preprocessing alignment files and detecting readthrough regions/genes with DoGFinder (except processing the annotation file, this must be run independently) can be automatically run through a pipeline built in Snakemake, present in TRTdogfinder2.py file, and providing a configuration file in yaml format, as shown in example TRT_configfile.yaml. This pipeline takes the [sample]_1.fastq and [sample]_2.fastq files as input and outputs for every sample a star_fusion output folder [sample_starout_fusion], a bedfile with DoGs coordinates called Final_Dog_annotation_[sample].bed and a csv table called DoGs_rpkm_table_[sample].  The configuration file must have the annotation previously built using “Get_loci_annotation”, parameters for STAR-Fusion, DoGFinder’s “Get_DoGs” and “Get_DoGs_rpkm”, docker containers/images for STAR-Fusion and DoGFinder, names of samples, file with chromosome sizes and output directory. Certain fields may be empty (e.g. "Get_DoGs_rpkm”) but must be present nonetheless (e.g “Get_DoGs_rpkm:  “) with a space after the colon. 
+It is recommended to read Snakemake’s documentation but, in summary, the pipeline can be run as:
+
+	snakemake -s TRTdogfinder2.py --configfile TRT_configfile -p  --cores 8 --resources load=50
+
+The flag ‘-s’ requires the snakemake file “TRTdogfinder2.py”, --configfile determines the configuration file, ‘-p’ prints the pipeline’s bash commands to the screen and ‘--cores’ allows the pipeline to do more than one job at the same time (this does not mean, however, that it will only use the established number of processors). “--resources load” determines the number of STAR-Fusion jobs that are run in parallel, this option should be modified according to the available memory (e.g. if you want to run three jobs in parallel, do --resources load=150).
+
+##Additional tools
+
+There is other software that are adequate for detection of unspliced transcripts called Dogcatcher and ARTDeco but are better suited for strand-specific data. As the difference between the tools’ algorithms and criteria leads to a considerable disparity in the results, it is advised to test different programs and, possibly, use a “wisdom of crowds” approach.
+ 
+###Dogcatcher
+
+To run Dogcatcher, we suggest pulling the following docker image: comicspt/Dogcatcher. Then, use the docker container for the following steps.
+First, create a file called bedgraphs with bedtools genomecov:
+
+	bedtools genomecov -bg -split -strand + -ibam SRR7537190_plu.BedGraph -g chromsizes.genome >  SRR7537190_plu.BedGraph
+	bedtools genomecov -bg -split -strand - -ibam SRR7537190_min,BedGraph -g chromsizes.genome > SRR7537190_min.BedGraph
+ 
+
+Now, it is necessary to use an ensembl annotation file, which must be preprocessed before further analyses; this works in a similar way to DoGFinder “Get_loci_annotation” step, removing genes inside other genes and keeping track of inside genes and any overlap on either strand. It will create several files in the ensembl annotation folder.
+
+	python Dogcatcher/1.0_Dogcatcher_flatten_gtf.py --annotation_file_with_path annotation/ensembl_annotation
+
+Now, this next step discovers readthrough genes/regions:
+
+	python Dogcatcher/2.0_Dogcatcher.py [--window_size 100 --coverage_percentage 0.95 --BedGraph_input_path --cpus --get_biotypes True] --BedGraph_input_min_strand bedgraphs/SRR7537190_bedGraph_min --BedGraph_input_plu_strand bedgraphs/SRR7537190_bedGraph_plu --output_prefix  CaughtDogs/ --annotation_file_with_path ensembl_annotation/ensembl_gtf
+
+		--window_size
+				This is the sliding window size. Default set to 100
+
+		--coverage_percentage
+				This is the coverage percent calculated at each window. Default 0.95
+
+		--BedGraph_input_path
+				Example: BedGraph_input_files/
+				This script will take the plu and min BedGraph files as input and create BedGraph files for each chromosome in a temporary folder.
+				You can delete this file when you are finished calculating data. If you run multiple sessions it will find the temporary folder so you do not have to
+				remake the BedGraphs for each chromosome every time.
+
+		--get_biotypes
+				Default True. Set to False if you dont care about biotype overlap. Although I would leave it on if doing DE
+		--output_prefix
+				This is the name of the output file
+				Example: Dogcatcher_output/
+		--cpus
+				This is the amount of cores the program will use.
+
+After, you need to filter the resulting readthrough regions to get the longest ones. It can also filter by the shortest but, in this case, we are interested in the longest. Dont forget to add that thing about independent samples
+
+	python Dogcatcher/2.5_Dogcatcher_filter.py --input_prefix CaughtDogs/ --Dogcatcher_plu_strand_list SRR7537190_plu.BedGraph --Dogcatcher_min_strand_list SRR7537190_min.BedGraph --output_prefix CaughtDogs/filtered/
+
+In the final folder, in this case “CaughtDogs/filtered/”, two sub-directories will be present, corresponding to antisense and sense transcripts, with three more folders in each: bed/, csv/ and gtf/. Dogcatcher additionally presents downstream steps for differential expression.
 
 
+
+###ARTDeco 
+
+ARTDeco has several steps but can be easily run like this if you don’t need differential expression information:
+
+	ARTDeco -home-dir ARTDECO_DIR -bam-files-dir BAM_FILES_DIR -gtf-file GTF_FILE -cpu NUM_CPU -chrom-sizes-file CHROM_SIZES_FILE -layout [PE/SE] -orientation [Forward/Reverse] -stranded [True/False]
+
+Or like this if you want differential expression information:
+
+	ARTDeco -home-dir ARTDECO_DIR -bam-files-dir BAM_FILES_DIR -gtf-file GTF_FILE -cpu NUM_CPU -chrom-sizes-file CHROM_SIZES_FILE
+	
+This will output a folder like Examples/ARTDeco_output.
 
 
 ## Detect pseudogenes in readthrough regions
