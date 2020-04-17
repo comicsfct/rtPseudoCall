@@ -41,11 +41,11 @@ It is recommended to read Snakemake’s documentation but, in summary, the pipel
 
 The flag ‘-s’ requires the snakemake file “TRTdogfinder2.py”, --configfile determines the configuration file, ‘-p’ prints the pipeline’s bash commands to the screen and ‘--cores’ allows the pipeline to do more than one job at the same time (this does not mean, however, that it will only use the established number of processors). “--resources load” determines the number of STAR-Fusion jobs that are run in parallel, this option should be modified according to the available memory (e.g. if you want to run three jobs in parallel, do --resources load=150).
 
-##Additional tools
+## Additional tools
 
 There is other software that are adequate for detection of unspliced transcripts called Dogcatcher and ARTDeco but are better suited for strand-specific data. As the difference between the tools’ algorithms and criteria leads to a considerable disparity in the results, it is advised to test different programs and, possibly, use a “wisdom of crowds” approach.
  
-###Dogcatcher
+### Dogcatcher
 
 To run Dogcatcher, we suggest pulling the following docker image: comicspt/Dogcatcher. Then, use the docker container for the following steps.
 First, create a file called bedgraphs with bedtools genomecov:
@@ -90,7 +90,7 @@ In the final folder, in this case “CaughtDogs/filtered/”, two sub-directorie
 
 
 
-###ARTDeco 
+### ARTDeco 
 
 ARTDeco has several steps but can be easily run like this if you don’t need differential expression information:
 
