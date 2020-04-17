@@ -47,6 +47,7 @@ Prerequisites
 	
 We suggest pulling the docker images mentioned in the prerequisites. To run the pipeline we suggest installing Anaconda/Miniconda and creating a conda environment on which to install
 python3 and Snakemake:
+
 		conda create -n TRTpipeline
 		conda activate TRTpipeline
 		conda install -c bioconda snakemake
