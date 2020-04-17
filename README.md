@@ -22,12 +22,12 @@ Framework to detect pseudogenes transcribed due to transcription readthrough of 
 
 ### Additional tools
 
-####ARTDeco
+#### ARTDeco
 
-	-docker images: comicspt/artdeco:1.0
+	- docker images: comicspt/artdeco:1.0
 	- samtools
 	
-####
+#### Dogcatcher
 	- docker images: Dogcatcher
 	- bedtools
 	
@@ -47,10 +47,10 @@ python3 and Snakemake:
 	
 In order to detect pseudogenes transcribed due to readthrough transcription of upstream genes, we propose an automatic pipeline that employs already existent tools to detect readthrough transcripts spliced/unspliced and depicts subsequently the overlap with pseudogenes.  Before the automatic pipeline can be run, it is necessary to create a global annotation file to ensure that only non-genic regions are considered, where all genes/transcripts that physically overlap will be fused and the most upstream and downstream coordinates will be set as the start and end, respectively. Since DoGFinder elongates readthrough regions until it finds another gene on the annotation, we will first remove the pseudogenes from the annotation file to improve the chances of finding readthrough regions that overlap pseudogenes and then run “Get_loci_annotation” to preprocess the annotation for readthrough detection
 
-	 grep -v pseudogene gencode.v31.annotation.gtf  > gencode.v31.annotation.noPseudogenes.gtf
+	grep -v pseudogene gencode.v31.annotation.gtf  > gencode.v31.annotation.noPseudogenes.gtf
 	Get_loci_annotation -out /annotation -gtf gencode.v31.annotation.noPseudogenes.gtf
 
-The steps of the pipeline that consist of running STAR-Fusion, preprocessing alignment files and detecting readthrough regions/genes with DoGFinder (except processing the annotation file, this must be run independently) can be automatically run through a pipeline built in Snakemake, present in TRTdogfinder2.py file, and providing a configuration file in yaml format, as shown in example TRT_configfile.yaml. This pipeline takes the [sample]_1.fastq and [sample]_2.fastq files as input and outputs for every sample a star_fusion output folder [sample_starout_fusion], a bedfile with DoGs coordinates called Final_Dog_annotation_[sample].bed and a csv table called DoGs_rpkm_table_[sample].  
+The steps of the pipeline that consist of running STAR-Fusion, preprocessing alignment files and detecting readthrough regions/genes with DoGFinder (except processing the annotation file, this must be run independently) can be automatically run through a pipeline built in Snakemake, present in TRTdogfinder2.py file, and providing a configuration file in yaml format, as shown in example TRT_configfile.yaml. This pipeline takes the "[sample]_1.fastq" and "[sample]_2.fastq" files as input and outputs for every sample a STAR-Fusion output folder "[sample_starout_fusion]", a bedfile with DoGs coordinates called "Final_Dog_annotation_[sample].bed" and a csv table called "DoGs_rpkm_table_[sample]".  
 The configuration file must have the annotation previously built using “Get_loci_annotation”, parameters for STAR-Fusion, DoGFinder’s “Get_DoGs” and “Get_DoGs_rpkm”, docker containers/images for STAR-Fusion and DoGFinder, names of samples, file with chromosome sizes and output directory. Certain fields may be empty (e.g. "Get_DoGs_rpkm”) but must be present nonetheless (e.g “Get_DoGs_rpkm:  “). 
 It is recommended to read Snakemake’s documentation but, in summary, the pipeline can be run as:
 
