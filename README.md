@@ -58,14 +58,14 @@ python3 and Snakemake:
 
 ## Automated pipeline
 	
-In order to detect pseudogenes transcribed due to readthrough transcription of upstream genes, we propose an automatic pipeline that employs already existent tools, namely STAR-Fusion and [DoGFinder](https://github.com/shalgilab/DoGFinder) to detect readthrough transcripts spliced/unspliced and depicts subsequently the overlap with pseudogenes.  Before the automatic pipeline can be run, it is necessary to create a global annotation file to ensure that only non-genic regions are considered, where all genes/transcripts that physically overlap will be fused and the most upstream and downstream coordinates will be set as the start and end, respectively. Since DoGFinder elongates readthrough regions until it finds another gene on the annotation, we will first remove the pseudogenes from the annotation file to improve the chances of finding readthrough regions that overlap pseudogenes and then run “Get_loci_annotation” to preprocess the annotation for readthrough detection
+In order to detect pseudogenes transcribed due to readthrough transcription of upstream genes, we propose an automatic pipeline that employs already existent tools, namely [STAR-Fusion](https://github.com/STAR-Fusion/STAR-Fusion/wiki) v1.8.1 (Haas et al., 2019) and [DoGFinder](https://github.com/shalgilab/DoGFinder) (Wiesel et al., 2018) to detect readthrough transcripts spliced/unspliced and depicts subsequently the overlap with pseudogenes.  Before the automatic pipeline can be run, it is necessary to create a global annotation file to ensure that only non-genic regions are considered, where all genes/transcripts that physically overlap will be fused and the most upstream and downstream coordinates will be set as the start and end, respectively. Since DoGFinder elongates readthrough regions until it finds another gene on the annotation, we will first remove the pseudogenes from the annotation file to improve the chances of finding readthrough regions that overlap pseudogenes and then run “Get_loci_annotation” to preprocess the annotation for readthrough detection
 
 	grep -v pseudogene gencode.v31.annotation.gtf  > gencode.v31.annotation.noPseudogenes.gtf
 	Get_loci_annotation -out /annotation -gtf gencode.v31.annotation.noPseudogenes.gtf
 
-The steps of the pipeline that consist of running STAR-Fusion, preprocessing alignment files and detecting readthrough regions/genes with DoGFinder (except processing the annotation file, this must be run independently) can be automatically run through a pipeline built in Snakemake, present in TRTdogfinder2.py file, and providing a configuration file in yaml format, as shown in example TRT_configfile.yaml. This pipeline takes the "[sample]_1.fastq" and "[sample]_2.fastq" files as input and outputs for every sample a STAR-Fusion output folder "[sample_starout_fusion]", a bedfile with DoGs coordinates called "Final_Dog_annotation_[sample].bed" and a csv table called "DoGs_rpkm_table_[sample]".  
+The steps of the pipeline that consist of running STAR-Fusion, preprocessing alignment files and detecting readthrough regions/genes with DoGFinder (except processing the annotation file, this must be run independently) can be automatically run through a pipeline built in [Snakemake](https://snakemake.readthedocs.io/en/stable/ ) v3.13.3 (Köster & Rahmann, 2012), present in TRTdogfinder2.py file, and providing a configuration file in yaml format, as shown in example TRT_configfile.yaml. This pipeline takes the "[sample]_1.fastq" and "[sample]_2.fastq" files as input and outputs for every sample a STAR-Fusion output folder "[sample_starout_fusion]", a bedfile with DoGs coordinates called "Final_Dog_annotation_[sample].bed" and a csv table called "DoGs_rpkm_table_[sample]".  
 The configuration file must have the annotation previously built using “Get_loci_annotation”, parameters for STAR-Fusion, DoGFinder’s “Get_DoGs” and “Get_DoGs_rpkm”, docker containers/images for STAR-Fusion and DoGFinder, names of samples, file with chromosome sizes and output directory. Certain fields may be empty (e.g. "Get_DoGs_rpkm”) but must be present nonetheless (e.g “Get_DoGs_rpkm:  “). 
-It is recommended to read Snakemake’s documentation but, in summary, the pipeline can be run as:
+It is recommended to read Snakemake’s [documentation](https://snakemake.readthedocs.io/en/stable/) but, in summary, the pipeline can be run as:
 
 	snakemake -s TRTdogfinder2.py --configfile TRT_configfile -p  --cores 8 --resources load=50
 
@@ -73,7 +73,7 @@ The flag ‘-s’ requires the snakemake file “TRTdogfinder2.py”, --configfi
 
 ## Additional tools
 
-There is other software that are adequate for detection of unspliced transcripts called Dogcatcher and ARTDeco but are better suited for strand-specific data. As the difference between the tools’ algorithms and criteria leads to a considerable disparity in the results, it is advised to test different programs and, possibly, use a “wisdom of crowds” approach.
+There is other software that are adequate for detection of unspliced transcripts called [Dogcatcher](https://github.com/Senorelegans/Dogcatcher)(Melnick et al., 2019) and [ARTDeco](https://github.com/sjroth/ARTDeco) but are better suited for strand-specific data. As the difference between the tools’ algorithms and criteria leads to a considerable disparity in the results, it is advised to test different programs and, possibly, use a “wisdom of crowds” approach.
  
 ### Dogcatcher
 
@@ -194,9 +194,15 @@ This script first crosses the coordinates of readthrough regions with the coordi
 After that, it detects pseudogenes which are between two opposite strand readthrough genes in unstranded libraries and thus it is difficult to understand if the reads align to the strand of the pseudogene or to the opposite strand.  In the end, these are present in a file called [output_prefix]_between2RTs.bed and are removed from the final filtered output called [output_prefix]_RTs_samestrand_ovlap_pseudos_filtered.bed.
 It then gets pseudogenes which overlap with pseudogenes on the opposite strand. This is because, on data that is not strand-specific, DogFinder stops elongating readthrough regions when it reaches another gene downstream, even if that gene is on the opposite strand. By removing pseudogenes from the annotation, we are allowing the elongation of readthrough regions to continue past a pseudogene. A pseudogene that overlaps with a readthrough region and with another pseudogene on the opposite strand typically would not be reported. However, since we remove the pseudogenes from the annotation and we have no indication to which strand the reads correspond, this script outputs these cases to a different file ([output_prefix]_inside_opposite_strand_pseudogenes.gtf) and removes them from the filtered output. 
 
+#Citations
 
+Haas, B.J., Dobin, A., Li, B. et al. Accuracy assessment of fusion transcript detection via read-mapping and de novo fusion transcript assembly-based methods. Genome Biol 20, 213 (2019). https://doi.org/10.1186/s13059-019-1842-9
 
+Wiesel, Y., Sabath, N. & Shalgi, R. DoGFinder: a software for the discovery and quantification of readthrough transcripts from RNA-seq. BMC Genomics 19, 597 (2018). https://doi.org/10.1186/s12864-018-4983-4
 
+Köster, J., & Rahmann, S. (2012). Snakemake—a scalable bioinformatics workflow engine. Bioinformatics, 28(19), 2520-2522.
+
+Melnick, M., Gonzales, P., Cabral, J., Allen, M. A., Dowell, R. D., & Link, C. D. (2019). Heat shock in C. elegans induces downstream of gene transcription and accumulation of double-stranded RNA. PloS one, 14(4).
 
 
 # Contributions
