@@ -7,12 +7,6 @@ Readthrough Transcribed Pseudogenes
 
 Framework to detect pseudogenes transcribed due to transcription readthrough of upstream genes, employing already existent bioinformatics tools with parameters adjusted for pseudogenes inspection.  
 
-# Table of Contents
-
-Installation
-Usage
-Prerequisites
-
 # Prerequisites
 ### Snakemake pipeline
 		- Snakemake
