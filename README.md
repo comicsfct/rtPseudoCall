@@ -34,12 +34,12 @@ Prerequisites
 
 ### Additional tools
 
-####ARTDeco
+#### ARTDeco
 
-	-docker images: comicspt/artdeco:1.0
+	- docker images: comicspt/artdeco:1.0
 	- samtools
 	
-####
+#### Dogcatcher
 	- docker images: Dogcatcher
 	- bedtools
 	
