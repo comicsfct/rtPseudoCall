@@ -71,6 +71,11 @@ It is recommended to read Snakemake’s [documentation](https://snakemake.readth
 
 The flag ‘-s’ requires the snakemake file “TRTdogfinder2.py”, --configfile determines the configuration file, ‘-p’ prints the pipeline’s bash commands to the screen and ‘--cores’ allows the pipeline to do more than one job at the same time (this does not mean, however, that it will only use the established number of processors). “--resources load” determines the number of STAR-Fusion jobs that are run in parallel, this option should be modified according to the available memory (e.g. if you want to run three jobs in parallel, do --resources load=150).
 
+Additionally, the file with the chromosome sizes can be created like this using samtools (Li et al., 2009) [faidx](http://www.htslib.org/doc/samtools-faidx.html ):
+
+	samtools faidx genome.fa
+	cut -f1,2 genome.fa.fai > genome.chrom.sizes
+
 ## Additional tools
 
 There is other software that are adequate for detection of unspliced transcripts called [Dogcatcher](https://github.com/Senorelegans/Dogcatcher)(Melnick et al., 2019) and [ARTDeco](https://github.com/sjroth/ARTDeco) but are better suited for strand-specific data. As the difference between the tools’ algorithms and criteria leads to a considerable disparity in the results, it is advised to test different programs and, possibly, use a “wisdom of crowds” approach.
@@ -78,7 +83,7 @@ There is other software that are adequate for detection of unspliced transcripts
 ### Dogcatcher
 
 To run Dogcatcher, we suggest pulling the following docker image: comicspt/Dogcatcher. Then, use the docker container for the following steps.
-First, create a file called bedgraphs with bedtools genomecov:
+First, create a file called bedgraphs with bedtools  genomecov:
 
 	bedtools genomecov -bg -split -strand + -ibam SRR7537190_plu.BedGraph -g chromsizes.genome >  SRR7537190_plu.BedGraph
 	bedtools genomecov -bg -split -strand - -ibam SRR7537190_min,BedGraph -g chromsizes.genome > SRR7537190_min.BedGraph
@@ -86,7 +91,7 @@ First, create a file called bedgraphs with bedtools genomecov:
 
 Now, it is necessary to use an ensembl annotation file, which must be preprocessed before further analyses; this works in a similar way to DoGFinder “Get_loci_annotation” step, removing genes inside other genes and keeping track of inside genes and any overlap on either strand. It will create several files in the ensembl annotation folder.
 
-	python Dogcatcher/1.0_Dogcatcher_flatten_gtf.py --annotation_file_with_path annotation/ensembl_annotation
+	python Dogcatcher/1.0_Dogcatcher_flatten_gtf.py --annotation_file_with_path gencode.v31.annotation.noPseudogenes.gtf
 
 Now, this next step discovers readthrough genes/regions:
 
@@ -122,7 +127,12 @@ In the final folder, in this case “CaughtDogs/filtered/”, two sub-directorie
 
 ### ARTDeco 
 
-ARTDeco has several steps but can be easily run like this if you don’t need differential expression information:
+To run ARTDeco, you first need a file with chromosome sizes (see above) to prepare the annotation file that was previously created:
+
+	awk '{ if ($0 ~ "transcript_id") print $0; else print $0" transcript_id \"\";"; }' gencode.v31.annotation.noPseudogenes.gtf > gencode.v31.annotation.noPseudogenes.gtf
+	
+
+Afterwards, ARTDeco has several steps that can be easily run automatically like this if you don’t need differential expression information:
 
 	ARTDeco -home-dir ARTDECO_DIR -bam-files-dir BAM_FILES_DIR -gtf-file GTF_FILE -cpu NUM_CPU -chrom-sizes-file CHROM_SIZES_FILE -layout [PE/SE] -orientation [Forward/Reverse] -stranded [True/False]
 
@@ -135,7 +145,7 @@ This will output a folder like Examples/ARTDeco_output.
 
 ## Detect pseudogenes in readthrough regions
 
-To cross genomic coordinates of readthrough coordinates with pseudogene coordinates in strand-specific data, you can use bedtools window: 
+To cross genomic coordinates of readthrough coordinates with pseudogene coordinates in strand-specific data, you can use bedtools (Quinlan & Hall, 2010) [window](https://bedtools.readthedocs.io/en/latest/content/tools/window.html): 
 
 	bedtools window -l 0 -r 30 -sw -sm -a Final_Dog_annotation_SRR7537190.bed -b gencode.v31.annotation.Pseudogenes.gtf > readthroughPseudogenes.bed
 
@@ -204,6 +214,9 @@ Köster, J., & Rahmann, S. (2012). Snakemake—a scalable bioinformatics workflo
 
 Melnick, M., Gonzales, P., Cabral, J., Allen, M. A., Dowell, R. D., & Link, C. D. (2019). Heat shock in C. elegans induces downstream of gene transcription and accumulation of double-stranded RNA. PloS one, 14(4).
 
+Quinlan, A. R., & Hall, I. M. (2010). BEDTools: a flexible suite of utilities for comparing genomic features. Bioinformatics (Oxford, England), 26(6), 841–842. https://doi.org/10.1093/bioinformatics/btq033
+
+Li, H., Handsaker, B., Wysoker, A., Fennell, T., Ruan, J., Homer, N., ... & Durbin, R. (2009). The sequence alignment/map format and SAMtools. Bioinformatics, 25(16), 2078-2079.
 
 # Contributions
 
