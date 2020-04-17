@@ -35,6 +35,7 @@ Framework to detect pseudogenes transcribed due to transcription readthrough of 
 	
 We suggest pulling the docker images mentioned in the prerequisites. To run the pipeline we suggest installing Anaconda/Miniconda and creating a conda environment on which to install
 python3 and Snakemake:
+
 		conda create -n TRTpipeline
 		conda activate TRTpipeline
 		conda install -c bioconda snakemake
@@ -45,7 +46,7 @@ python3 and Snakemake:
 
 ## Automated pipeline
 	
-In order to detect pseudogenes transcribed due to readthrough transcription of upstream genes, we propose an automatic pipeline that employs already existent tools to detect readthrough transcripts spliced/unspliced and depicts subsequently the overlap with pseudogenes.  Before the automatic pipeline can be run, it is necessary to create a global annotation file to ensure that only non-genic regions are considered, where all genes/transcripts that physically overlap will be fused and the most upstream and downstream coordinates will be set as the start and end, respectively. Since DoGFinder elongates readthrough regions until it finds another gene on the annotation, we will first remove the pseudogenes from the annotation file to improve the chances of finding readthrough regions that overlap pseudogenes and then run “Get_loci_annotation” to preprocess the annotation for readthrough detection
+In order to detect pseudogenes transcribed due to readthrough transcription of upstream genes, we propose an automatic pipeline that employs already existent tools, namely STAR-Fusion and [DoGFinder](https://github.com/shalgilab/DoGFinder) to detect readthrough transcripts spliced/unspliced and depicts subsequently the overlap with pseudogenes.  Before the automatic pipeline can be run, it is necessary to create a global annotation file to ensure that only non-genic regions are considered, where all genes/transcripts that physically overlap will be fused and the most upstream and downstream coordinates will be set as the start and end, respectively. Since DoGFinder elongates readthrough regions until it finds another gene on the annotation, we will first remove the pseudogenes from the annotation file to improve the chances of finding readthrough regions that overlap pseudogenes and then run “Get_loci_annotation” to preprocess the annotation for readthrough detection
 
 	grep -v pseudogene gencode.v31.annotation.gtf  > gencode.v31.annotation.noPseudogenes.gtf
 	Get_loci_annotation -out /annotation -gtf gencode.v31.annotation.noPseudogenes.gtf
