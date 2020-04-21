@@ -204,7 +204,7 @@ This script first crosses the coordinates of readthrough regions with the coordi
 After that, it detects pseudogenes which are between two opposite strand readthrough genes in unstranded libraries and thus it is difficult to understand if the reads align to the strand of the pseudogene or to the opposite strand.  In the end, these are present in a file called [output_prefix]_between2RTs.bed and are removed from the final filtered output called [output_prefix]_RTs_samestrand_ovlap_pseudos_filtered.bed.
 It then gets pseudogenes which overlap with pseudogenes on the opposite strand. This is because, on data that is not strand-specific, DogFinder stops elongating readthrough regions when it reaches another gene downstream, even if that gene is on the opposite strand. By removing pseudogenes from the annotation, we are allowing the elongation of readthrough regions to continue past a pseudogene. A pseudogene that overlaps with a readthrough region and with another pseudogene on the opposite strand typically would not be reported. However, since we remove the pseudogenes from the annotation and we have no indication to which strand the reads correspond, this script outputs these cases to a different file ([output_prefix]_inside_opposite_strand_pseudogenes.gtf) and removes them from the filtered output. 
 
-#Citations
+# Citations
 
 Haas, B.J., Dobin, A., Li, B. et al. Accuracy assessment of fusion transcript detection via read-mapping and de novo fusion transcript assembly-based methods. Genome Biol 20, 213 (2019). https://doi.org/10.1186/s13059-019-1842-9
 
