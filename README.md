@@ -129,16 +129,18 @@ In the final folder, in this case “CaughtDogs/filtered/”, two sub-directorie
 
 To run ARTDeco, you first need a file with chromosome sizes (see above) to prepare the annotation file that was previously created:
 
-	awk '{ if ($0 ~ "transcript_id") print $0; else print $0" transcript_id \"\";"; }' gencode.v31.annotation.noPseudogenes.gtf > gencode.v31.annotation.noPseudogenes.gtf
+	awk '{ if ($0 ~ "transcript_id") print $0; else print $0" transcript_id \"\";"; }' gencode.v31.annotation.noPseudogenes.gtf > gencode.v31.annotation.noPseudogenes.mod.gtf
 	
 
 Afterwards, ARTDeco has several steps that can be easily run automatically like this if you don’t need differential expression information:
 
-	ARTDeco -home-dir ARTDECO_DIR -bam-files-dir BAM_FILES_DIR -gtf-file GTF_FILE -cpu NUM_CPU -chrom-sizes-file CHROM_SIZES_FILE -layout [PE/SE] -orientation [Forward/Reverse] -stranded [True/False]
-
+	ARTDeco -home-dir ARTDECO_DIR -bam-files-dir BAM_FILES_DIR -gtf-file gencode.v31.annotation.noPseudogenes.mod.gtf -cpu NUM_CPU -chrom-sizes-file CHROM_SIZES_FILE -layout [PE/SE] -orientation [Forward/Reverse] -stranded [True/False]
+	
+	For this you need to have a folder with only the bam files to supply to ARTDeco.
+	
 Or like this if you want differential expression information:
 
-	ARTDeco -home-dir ARTDECO_DIR -bam-files-dir BAM_FILES_DIR -gtf-file GTF_FILE -cpu NUM_CPU -chrom-sizes-file CHROM_SIZES_FILE
+	ARTDeco -home-dir ARTDECO_DIR -bam-files-dir BAM_FILES_DIR -gtf-file GTF_FILE -cpu NUM_CPU -chrom-sizes-file CHROM_SIZES_FILE -meta-file META_FILE -comparisons-file COMPARISONS_FILE
 	
 This will output a folder like Examples/ARTDeco_output.
 
