@@ -213,17 +213,4 @@ Quinlan, A. R., & Hall, I. M. (2010). BEDTools: a flexible suite of utilities fo
 
 Li, H., Handsaker, B., Wysoker, A., Fennell, T., Ruan, J., Homer, N., ... & Durbin, R. (2009). The sequence alignment/map format and SAMtools. Bioinformatics, 25(16), 2078-2079.
 
-# Contributions
-
-	sadsadsad
-
-
-# Credits
-
-	sadsadsad
-
-
-# License
-
-	sadsadsad
 
